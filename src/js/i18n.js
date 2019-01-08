@@ -73,6 +73,8 @@ var _defs = {
     stringType: 'Field type "string". ' +
       'Field type is not determined from the value, ' +
       'but always returned as string.',
+    feedback: 'Feedback',
+    feedbackType: 'Add the documentation feedback control which directs users to submit product or documentation feedback',
     modeCodeText: 'Code',
     modeCodeTitle: 'Switch to code highlighter',
     modeFormText: 'Form',
@@ -179,6 +181,13 @@ var _defs = {
       'mas sempre retornara um texto.'
   }
 };
+const keyDesDict = {
+  feedback_system: 'Choose Github or VSTS.',
+  feedback_github_repo: 'The Github repo url, like "[orgName]/[repoName]".',
+  feedback_product_url: 'To provide product feedback, ' + 
+    'the customer clicks the "Give product feedback" button. ' + 
+    'The web page that is specified here for product feedback opens.  '
+};
 
 var _defaultLang = 'en';
 var _lang;
@@ -235,5 +244,8 @@ module.exports = {
       }
     }
     return text || key;
+  },
+  getKeyDes: (key) => {
+    return keyDesDict[key];
   }
 };

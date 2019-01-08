@@ -10,6 +10,7 @@ var showSortModal = require('./showSortModal');
 var showTransformModal = require('./showTransformModal');
 var util = require('./util');
 var translate = require('./i18n').translate;
+var getKeyDes = require('./i18n').getKeyDes;
 
 var DEFAULT_MODAL_ANCHOR = document.body; // TODO: this constant is defined twice
 
@@ -2760,6 +2761,21 @@ Node.prototype.onEvent = function (event) {
     this._onEvent(event);
   }
 
+  // check if mouse is on json key
+  // Id so, show the tooltip on confi key value
+  if (target == dom.field) {
+    if (type == 'mouseover') {
+      const key = target.textContent;
+      const des = getKeyDes(key);
+      
+      if (des) {
+        target.setAttribute('title', des);
+      }
+    } else if (type == 'mouseout') {
+      target.removeAttribute('title');
+    }
+  }
+
   // check if mouse is on menu or on dragarea.
   // If so, highlight current row and its childs
   if (target == dom.drag || target == dom.menu) {
@@ -4079,8 +4095,28 @@ Node.TYPE_TITLES = {
   'auto': translate('autoType'),
   'object': translate('objectType'),
   'array': translate('arrayType'),
-  'string': translate('stringType')
+  'string': translate('stringType'),
+  'feedback': translate('feedbackType')
 };
+
+// op configs by scenario
+Node.FEEDBACK = [
+  {
+    name: 'feedback_system',
+    value: 'Github',
+    type: 'string'
+  },
+  {
+    name: 'feedback_github_repo',
+    value: '[orgName]/[repoName]',
+    type: 'string'
+  },
+  {
+    name: 'feedback_product_url',
+    value: '',
+    type: 'string'
+  }
+];
 
 Node.prototype.addTemplates = function (menu, append) {
     var node = this;
@@ -4119,6 +4155,7 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
   var node = this;
   var titles = Node.TYPE_TITLES;
   var items = [];
+  const feedbackConfig = Node.FEEDBACK;
 
   if (this.editable.value) {
     items.push({
@@ -4235,6 +4272,16 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
                 click: function () {
                     node._onAppend('', '', 'string');
                 }
+            },
+            {
+              text: translate('feedback'),
+              className: 'jsoneditor-type-string',
+              title: titles.feedback,
+              click: () => {
+                feedbackConfig.forEach(config => {
+                  node._onAppend(config.name, config.value, config.type);
+                })
+              }
             }
         ];
         node.addTemplates(appendSubmenu, true);
@@ -4285,6 +4332,16 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
             click: function () {
                 node._onInsertBefore('', '', 'string');
             }
+        },
+        {
+          text: translate('feedback'),
+          className: 'jsoneditor-type-string',
+          title: titles.feedback,
+          click: () => {
+            feedbackConfig.forEach(config => {
+              node._onInsertBefore(config.name, config.value, config.type);
+            })
+          }
         }
     ];
     node.addTemplates(insertSubmenu, false);
