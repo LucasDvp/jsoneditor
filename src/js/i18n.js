@@ -181,7 +181,7 @@ var _defs = {
       'mas sempre retornara um texto.'
   }
 };
-const keyDesDict = {
+var keyDesDict = {
   feedback_system: 'Choose Github or VSTS.',
   feedback_github_repo: 'The Github repo url, like "[orgName]/[repoName]".',
   feedback_product_url: 'To provide product feedback, ' + 
@@ -245,7 +245,7 @@ module.exports = {
     }
     return text || key;
   },
-  getKeyDes: (key) => {
+  getKeyDes: function (key) {
     return keyDesDict[key];
   }
 };

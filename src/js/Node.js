@@ -2765,8 +2765,8 @@ Node.prototype.onEvent = function (event) {
   // Id so, show the tooltip on confi key value
   if (target == dom.field) {
     if (type == 'mouseover') {
-      const key = target.textContent;
-      const des = getKeyDes(key);
+      var key = target.textContent;
+      var des = getKeyDes(key);
       
       if (des) {
         target.setAttribute('title', des);
@@ -4155,7 +4155,7 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
   var node = this;
   var titles = Node.TYPE_TITLES;
   var items = [];
-  const feedbackConfig = Node.FEEDBACK;
+  var feedbackConfig = Node.FEEDBACK;
 
   if (this.editable.value) {
     items.push({
@@ -4277,8 +4277,8 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
               text: translate('feedback'),
               className: 'jsoneditor-type-string',
               title: titles.feedback,
-              click: () => {
-                feedbackConfig.forEach(config => {
+              click: function () {
+                feedbackConfig.forEach(function (config) {
                   node._onAppend(config.name, config.value, config.type);
                 })
               }
@@ -4337,8 +4337,8 @@ Node.prototype.showContextMenu = function (anchor, onClose) {
           text: translate('feedback'),
           className: 'jsoneditor-type-string',
           title: titles.feedback,
-          click: () => {
-            feedbackConfig.forEach(config => {
+          click: function () {
+            feedbackConfig.forEach(function (config) {
               node._onInsertBefore(config.name, config.value, config.type);
             })
           }

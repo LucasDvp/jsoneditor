@@ -25,7 +25,7 @@
  *
  * @author  Jos de Jong, <wjosdejong@gmail.com>
  * @version 5.27.0
- * @date    2019-01-05
+ * @date    2019-01-08
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -35261,6 +35261,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    stringType: 'Field type "string". ' +
 	      'Field type is not determined from the value, ' +
 	      'but always returned as string.',
+	    feedback: 'Feedback',
+	    feedbackType: 'Add the documentation feedback control which directs users to submit product or documentation feedback',
 	    modeCodeText: 'Code',
 	    modeCodeTitle: 'Switch to code highlighter',
 	    modeFormText: 'Form',
@@ -35367,6 +35369,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'mas sempre retornara um texto.'
 	  }
 	};
+	var keyDesDict = {
+	  feedback_system: 'Choose Github or VSTS.',
+	  feedback_github_repo: 'The Github repo url, like "[orgName]/[repoName]".',
+	  feedback_product_url: 'To provide product feedback, ' + 
+	    'the customer clicks the "Give product feedback" button. ' + 
+	    'The web page that is specified here for product feedback opens.  '
+	};
 
 	var _defaultLang = 'en';
 	var _lang;
@@ -35423,6 +35432,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    return text || key;
+	  },
+	  getKeyDes: function (key) {
+	    return keyDesDict[key];
 	  }
 	};
 
@@ -35559,6 +35571,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var showTransformModal = __webpack_require__(77);
 	var util = __webpack_require__(65);
 	var translate = __webpack_require__(68).translate;
+	var getKeyDes = __webpack_require__(68).getKeyDes;
 
 	var DEFAULT_MODAL_ANCHOR = document.body; // TODO: this constant is defined twice
 
@@ -38309,6 +38322,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._onEvent(event);
 	  }
 
+	  // check if mouse is on json key
+	  // Id so, show the tooltip on confi key value
+	  if (target == dom.field) {
+	    if (type == 'mouseover') {
+	      var key = target.textContent;
+	      var des = getKeyDes(key);
+	      
+	      if (des) {
+	        target.setAttribute('title', des);
+	      }
+	    } else if (type == 'mouseout') {
+	      target.removeAttribute('title');
+	    }
+	  }
+
 	  // check if mouse is on menu or on dragarea.
 	  // If so, highlight current row and its childs
 	  if (target == dom.drag || target == dom.menu) {
@@ -39628,8 +39656,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'auto': translate('autoType'),
 	  'object': translate('objectType'),
 	  'array': translate('arrayType'),
-	  'string': translate('stringType')
+	  'string': translate('stringType'),
+	  'feedback': translate('feedbackType')
 	};
+
+	// op configs by scenario
+	Node.FEEDBACK = [
+	  {
+	    name: 'feedback_system',
+	    value: 'Github',
+	    type: 'string'
+	  },
+	  {
+	    name: 'feedback_github_repo',
+	    value: '[orgName]/[repoName]',
+	    type: 'string'
+	  },
+	  {
+	    name: 'feedback_product_url',
+	    value: '',
+	    type: 'string'
+	  }
+	];
 
 	Node.prototype.addTemplates = function (menu, append) {
 	    var node = this;
@@ -39668,6 +39716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var node = this;
 	  var titles = Node.TYPE_TITLES;
 	  var items = [];
+	  var feedbackConfig = Node.FEEDBACK;
 
 	  if (this.editable.value) {
 	    items.push({
@@ -39784,6 +39833,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                click: function () {
 	                    node._onAppend('', '', 'string');
 	                }
+	            },
+	            {
+	              text: translate('feedback'),
+	              className: 'jsoneditor-type-string',
+	              title: titles.feedback,
+	              click: function () {
+	                feedbackConfig.forEach(function (config) {
+	                  node._onAppend(config.name, config.value, config.type);
+	                })
+	              }
 	            }
 	        ];
 	        node.addTemplates(appendSubmenu, true);
@@ -39834,6 +39893,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            click: function () {
 	                node._onInsertBefore('', '', 'string');
 	            }
+	        },
+	        {
+	          text: translate('feedback'),
+	          className: 'jsoneditor-type-string',
+	          title: titles.feedback,
+	          click: function () {
+	            feedbackConfig.forEach(function (config) {
+	              node._onInsertBefore(config.name, config.value, config.type);
+	            })
+	          }
 	        }
 	    ];
 	    node.addTemplates(insertSubmenu, false);
